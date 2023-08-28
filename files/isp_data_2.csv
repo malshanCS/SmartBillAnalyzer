@@ -1,0 +1,25 @@
+image_path,ISP,date,amount
+../Data/All_bills\1.png,Dialog,2021-12-48,2890.44
+../Data/All_bills\10.png,Dialog,2023-01-04,2800.0
+../Data/All_bills\11.png,Dialog,2023-01-26,4200.0
+../Data/All_bills\12.png,Dialog,2023-02-27,4000.0
+../Data/All_bills\2.png,Dialog,2022-03-25,500.0
+../Data/All_bills\3.png,Dialog,2022-05-31,200.0
+../Data/All_bills\4.png,Dialog,2022-07-04,2228.56
+../Data/All_bills\5.png,Dialog,,200.0
+../Data/All_bills\6.png,Dialog,2022-08-07,200.0
+../Data/All_bills\7.png,Dialog,2022-08-28,4387.28
+../Data/All_bills\8.png,Dialog,2022-11-04,700.0
+../Data/All_bills\9.png,Dialog,2022-42-27,4200.0
+../Data/All_bills\image2-1.png,SLT,2023-07-02,7551.97
+../Data/All_bills\image3-1.png,SLT,2023-06-02,7828.77
+../Data/All_bills\image4-1.png,SLT,2023-05-02,7786.65
+../Data/All_bills\image5-1.png,SLT,2023-04-02,7317.28
+../Data/All_bills\image6-1.png,SLT,2023-02-02,7317.28
+../Data/All_bills\image7-1.png,SLT,2022-12-02,7618.15
+../Data/All_bills\image8-1.png,SLT,2022-11-02,9531.73
+../Data/All_bills\SLT eBill-002311885X1789Image-1.png,SLT,2022-10-02,8920.42
+../Data/All_bills\SLT eBill-002311885X1800Image-1.png,SLT,2022-12-02,8964.63
+../Data/All_bills\SLT eBill-002311885X1812Image-1.png,SLT,2023-01-02,8392.96
+../Data/All_bills\SLT eBill-002311885X1824Image-1.png,SLT,2023-02-02,5185.65
+../Data/All_bills\SLT eBill-002311885X1873Image-1.png,SLT,2023-07-02,7213.54
