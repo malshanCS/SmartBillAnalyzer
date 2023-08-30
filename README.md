@@ -60,7 +60,8 @@ To get started with Smart Bill Analyzer, follow these steps:
 3. Launch the application:
 
    ```bash
-   app_streamliy/streamlit run app.py
+   cd app_streamliy
+   streamlit run app.py
    ```
 
 4. Upload a bill image and let Smart Bill Analyzer work its magic!
