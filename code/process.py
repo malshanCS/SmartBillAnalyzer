@@ -259,15 +259,4 @@ df.to_csv('../files/isp_data_2.csv', index=False)
 
 
 
-# In[ ]:
-
-
-# df = pd.read_csv('../files/isp_data_2.csv')
-# df
-
-
-# In[ ]:
-
-
-
 
