@@ -163,6 +163,7 @@ elif selected2 == "Insights":
         df['date'] = pd.to_datetime(df['date'])
         df['month'] = df['date'].dt.month
         df['year'] = df['date'].dt.year
+        #
 
         monthly_payments = df.groupby(['ISP','year', 'month'])['amount'].sum().reset_index()
 
