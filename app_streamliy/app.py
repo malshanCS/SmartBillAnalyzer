@@ -14,12 +14,13 @@ import os
 import subprocess
 import pandas as pd
 import matplotlib.pyplot as plt
-from io import BytesIO
 import plotly.express as px
+from datetime import datetime
 
 
 
 
+st.set_page_config(page_title="Smart Bill Analyzer", page_icon=":money_with_wings:")
 
 
 img_path = "../Data/batch_process"
@@ -86,6 +87,33 @@ elif selected2 == "Upload":
 elif selected2 == "Insights":
 
 
+    button_style = """
+    <style>
+        .centered {
+            display: flex;
+            justify-content: center;
+        }
+        .stButton>button {
+            background-color: #0c7d21;  /* Green */
+            color: white;
+            width: 100%;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .stButton>button:hover {
+            background-color: #0f5c01;  /* Darker green on hover */
+            color: black;
+        }
+    </style>
+    """
+
+    st.markdown(button_style, unsafe_allow_html=True)
+
+
 
     # Process the image fds
     if st.button("Process"):
@@ -100,29 +128,95 @@ elif selected2 == "Insights":
 
 
 
+
     # Generate insights
     if st.button("Generate Insights"):
-        df = pd.read_csv("../files/isp_data_2.csv")
+        isp_data = pd.read_csv('../files/isp_data_2.csv')
+        isp_data['date'].fillna('unknown', inplace=True)
 
-        # Use st.sidebar for select boxes
-        x_axis_val = st.sidebar.selectbox("Select the x-axis value", options=df.columns)
-        y_axis_val = st.sidebar.selectbox("Select the y-axis value", options=df.columns)
+        df = isp_data.copy()
 
-        # Use a separate button to generate the plot
-        if st.button("Generate Plot"):
+        # Filter out rows with "unknown" dates
+        df = df[df['date'] != 'unknown']
+
+        # Convert the 'date' column to strings
+        df['date'] = df['date'].astype(str)
+
+        # Define a function to clean and fix dates
+        def clean_and_fix_dates(date_str):
             try:
-                if x_axis_val and y_axis_val:  # Check if both axes have been selected
-                    plot = px.scatter(df, x=x_axis_val, y=y_axis_val, color="ISP")
-                    st.plotly_chart(plot)
-
-            except Exception as e:
-                st.error(f"Error generating insights: {str(e)}")
-
+                # Check for NaN and convert to "unknown"
+                if pd.isna(date_str):
+                    return "unknown"
                 
+                # Try to parse the date
+                date_obj = datetime.strptime(date_str, '%Y-%m-%d')
+            except ValueError:
+                # If it's an invalid date, set the month to 12 (December) and day to 31
+                date_obj = datetime.strptime(date_str[:4] + '-12-31', '%Y-%m-%d')
+            
+            return date_obj.strftime('%Y-%m-%d')
+
+        # Apply the function to the 'date' column
+        df['date'] = df['date'].apply(clean_and_fix_dates)
+
+        df['date'] = pd.to_datetime(df['date'])
+        df['month'] = df['date'].dt.month
+        df['year'] = df['date'].dt.year
+
+        monthly_payments = df.groupby(['ISP','year', 'month'])['amount'].sum().reset_index()
+
+        monthly_payments = pd.DataFrame(monthly_payments)
+
+        orig = df.copy()
+        df = monthly_payments.copy()
+
+        import plotly.graph_objs as go
+        import plotly.express as px
+        import plotly.subplots as sp
+
+        # Assuming you have the 'year' and 'month' columns
+        # If not, you can use df['date'] = df['year'].astype(str) + '-' + df['month'].astype(str) to create a 'year-month' column
+
+
+        # fig = sp.make_subplots(rows=1, cols=2)
+
+        # Create a line graph using Plotly
+        trace1 = go.Figure()
+
+        # Add a line trace for each ISP
+        for isp in df['ISP'].unique():
+            df_filtered = df[df['ISP'] == isp]
+            trace1.add_trace(go.Scatter(x=df_filtered['year'].astype(str) + '-' + df_filtered['month'].astype(str),
+                                    y=df_filtered['amount'],
+                                    mode='lines+markers',
+                                    name=isp))
+
+        # Customize the layout
+        trace1.update_layout(
+            title='Monthly Expenditure on Internet Services by ISP (Line Graph)',
+            xaxis_title='Year-Month',
+            yaxis_title='Amount',
+            xaxis=dict(tickangle=45),
+            template="plotly_dark",
+            width=800,
+            height=500
+        )
+
+
+        custom_colors = ['#4318DE','#DE1850']
 
 
 
+        trace2 = px.pie(df, names='ISP', values='amount', title='Total Expenditure by ISP' , color_discrete_sequence=custom_colors, template="plotly_dark", width=800, height=500)
+        # fig.add_trace(trace1, row=1, col=1)
+        # fig.add_trace(trace2, row=1, col=2)
+
+        # fig.update_layout(title='test', showlegend=True)
 
 
 
-
+    
+        # Plot!
+        st.plotly_chart(trace1, use_container_width=True)
+        st.plotly_chart(trace2, use_container_width=True)
