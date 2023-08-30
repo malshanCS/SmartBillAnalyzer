@@ -112,6 +112,7 @@ elif selected2 == "Insights":
     """
 
     st.markdown(button_style, unsafe_allow_html=True)
+    ###
 
 
 
