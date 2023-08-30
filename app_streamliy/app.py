@@ -87,7 +87,7 @@ elif selected2 == "Insights":
 
 
 
-    # Process the image
+    # Process the image fds
     if st.button("Process"):
         try:
             # Run the process.py script
