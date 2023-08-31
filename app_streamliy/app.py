@@ -172,38 +172,67 @@ elif selected2 == "Insights":
 
         orig = df.copy()
         df = monthly_payments.copy()
+        df['year-month'] = df['year'].astype(str) + '-' + df['month'].astype(str).str.zfill(2)
+        import calendar
+        df['date'] = df['year'].astype(str) + '-' + df['month'].apply(lambda x: calendar.month_name[x])
+
+
 
         import plotly.graph_objs as go
         import plotly.express as px
         import plotly.subplots as sp
 
-        # Assuming you have the 'year' and 'month' columns
-        # If not, you can use df['date'] = df['year'].astype(str) + '-' + df['month'].astype(str) to create a 'year-month' column
+        # # Assuming you have the 'year' and 'month' columns
+        # # If not, you can use df['date'] = df['year'].astype(str) + '-' + df['month'].astype(str) to create a 'year-month' column
 
 
-        # fig = sp.make_subplots(rows=1, cols=2)
+        # # fig = sp.make_subplots(rows=1, cols=2)
 
-        # Create a line graph using Plotly
-        trace1 = go.Figure()
+        # # Create a line graph using Plotly
+        # trace1 = go.Figure()
 
-        # Add a line trace for each ISP
-        for isp in df['ISP'].unique():
-            df_filtered = df[df['ISP'] == isp]
-            trace1.add_trace(go.Scatter(x=df_filtered['year'].astype(str) + '-' + df_filtered['month'].astype(str),
-                                    y=df_filtered['amount'],
-                                    mode='lines+markers',
-                                    name=isp))
+        # # Add a line trace for each ISP
+        # for isp in df['ISP'].unique():
+        #     df_filtered = df[df['ISP'] == isp]
+        #     trace1.add_trace(go.Scatter(x=df_filtered['year'].astype(str) + '-' + df_filtered['month'].astype(str),
+        #                             y=df_filtered['amount'],
+        #                             mode='lines+markers',
+        #                             name=isp))
 
-        # Customize the layout
-        trace1.update_layout(
-            title='Monthly Expenditure on Internet Services by ISP (Line Graph)',
-            xaxis_title='Year-Month',
-            yaxis_title='Amount',
-            xaxis=dict(tickangle=45),
-            template="plotly_dark",
-            width=800,
-            height=500
-        )
+        # # Customize the layout
+        # trace1.update_layout(
+        #     title='Monthly Expenditure on Internet Services by ISP (Line Graph)',
+        #     xaxis_title='Year-Month',
+        #     yaxis_title='Amount',
+        #     xaxis=dict(tickangle=45),
+        #     template="plotly_dark",
+        #     width=800,
+        #     height=500
+        # )
+
+
+        # Define custom colors for ISPs
+        colors = {'Dialog': 'red', 'SLT': 'blue'}
+
+        # Create a bar plot using Plotly Express with custom colors
+        trace1 = px.bar(df, x="year-month", y="amount",
+                        color="ISP",
+                        color_discrete_map=colors,  # Custom colors for ISPs
+                        labels={"year-month": "Year-Month", "amount": "Amount"},
+                        title="Monthly Expenditure on Internet Services by ISP")
+
+        # Rotate X-axis labels for better readability
+        trace1.update_xaxes(tickangle=45)
+
+        # Change the size of the figure
+        trace1.update_layout(width=800, height=500)
+
+        # Change the theme (color scheme)
+        trace1.update_layout(template="plotly_dark")
+
+
+
+
 
 
         custom_colors = ['#4318DE','#DE1850']
