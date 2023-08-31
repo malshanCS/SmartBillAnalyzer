@@ -64,8 +64,7 @@ if selected2 == "Home":
 elif selected2 == "Upload":
 
     uploaded_images = st.file_uploader("Upload images", type=["jpg", "png", "jpeg"], accept_multiple_files=True)
-
-
+    
 
 
 
@@ -79,7 +78,9 @@ elif selected2 == "Upload":
         st.success("Images uploaded and saved!")
 
     for i, uploaded_image in enumerate(uploaded_images):
-        image_path = os.path.join(img_path, f"uploaded_image_{i}.png")
+        original_filename = uploaded_image.name
+
+        image_path = os.path.join(img_path, f"upload_image_{original_filename}.png")
         with open(image_path, "wb") as f:
             f.write(uploaded_image.read())
 
@@ -132,6 +133,8 @@ elif selected2 == "Insights":
 
     # Generate insights
     if st.button("Generate Insights"):
+
+################################################################# Dataframe preparation #################################################################
         isp_data = pd.read_csv('../files/isp_data_2.csv')
         isp_data['date'].fillna('unknown', inplace=True)
 
@@ -177,6 +180,16 @@ elif selected2 == "Insights":
         df['date'] = df['year'].astype(str) + '-' + df['month'].apply(lambda x: calendar.month_name[x])
 
 
+        # Display the DataFrame in Streamlit with some styling
+        st.title("Your Internet Expenses!!")
+
+        show_df = df[['date','ISP', 'amount']]
+        st.dataframe(show_df, use_container_width=True)
+
+
+
+
+################################################################# Plots #################################################################
 
         import plotly.graph_objs as go
         import plotly.express as px
@@ -220,9 +233,21 @@ elif selected2 == "Insights":
                         color_discrete_map=colors,  # Custom colors for ISPs
                         labels={"year-month": "Year & Month", "amount": "Amount"},
                         title="Monthly Expenditure on Internet Services by ISP")
+        
+
+        trace1.update_layout(
+        title={
+            'text': "Monthly Expenditure on Internet Services by ISP",
+            'x': 0.5,  # Title position (centered)
+            'xanchor': 'center',  # Title anchor point
+            'y': 0.95,  # Title Y position
+            'yanchor': 'top',  # Title Y anchor point
+            'font': {'size': 24}  # Adjust the font size as needed
+        }
+)
 
         # Rotate X-axis labels for better readability
-        trace1.update_xaxes(tickangle=90)
+        trace1.update_xaxes(tickangle=45)
 
         # Change the size of the figure
         trace1.update_layout(width=1200, height=600)
@@ -244,6 +269,16 @@ elif selected2 == "Insights":
         # fig.add_trace(trace2, row=1, col=2)
 
         # fig.update_layout(title='test', showlegend=True)
+        trace2.update_layout(
+        title={
+            'text': "Total Expenditure by ISP",
+            'x': 0.5,  # Title position (centered)
+            'xanchor': 'center',  # Title anchor point
+            'y': 0.95,  # Title Y position
+            'yanchor': 'top',  # Title Y anchor point
+            'font': {'size': 24}  # Adjust the font size as needed
+        }
+        )
 
 
 
