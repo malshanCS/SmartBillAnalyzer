@@ -218,14 +218,14 @@ elif selected2 == "Insights":
         trace1 = px.bar(df, x="year-month", y="amount",
                         color="ISP",
                         color_discrete_map=colors,  # Custom colors for ISPs
-                        labels={"year-month": "Year-Month", "amount": "Amount"},
+                        labels={"year-month": "Year & Month", "amount": "Amount"},
                         title="Monthly Expenditure on Internet Services by ISP")
 
         # Rotate X-axis labels for better readability
-        trace1.update_xaxes(tickangle=45)
+        trace1.update_xaxes(tickangle=90)
 
         # Change the size of the figure
-        trace1.update_layout(width=800, height=500)
+        trace1.update_layout(width=1200, height=600)
 
         # Change the theme (color scheme)
         trace1.update_layout(template="plotly_dark")
@@ -235,7 +235,7 @@ elif selected2 == "Insights":
 
 
 
-        custom_colors = ['#4318DE','#DE1850']
+        custom_colors = ['#1000F2','#F70000']
 
 
 
