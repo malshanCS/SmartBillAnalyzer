@@ -27,6 +27,8 @@ Our project leverages a range of cutting-edge technologies to deliver its functi
 
 - **Streamlit**: Streamlit powers the web application interface, providing users with a seamless and user-friendly experience.
 
+- **Gradio**: Streamlit powers the deployment of machine learning models trained, providing users with a seamless and user-friendly experience.
+
 ## How It Works
 
 Smart Bill Analyzer simplifies the process of bill analysis in the following steps:
@@ -57,13 +59,19 @@ To get started with Smart Bill Analyzer, follow these steps:
    pip install -r requirements.txt
    ```
 
-3. Launch the application:
+3. Launch the Invoice application:
 
    ```bash
    app_streamliy/streamlit run app.py
    ```
 
-4. Upload a bill image and let Smart Bill Analyzer work its magic!
+4. Launch the Receipt application:
+
+   ```bash
+   gradio_demo_script/wildreceipt/python app.py
+   ```
+
+5. Upload a bill image and let Smart Bill Analyzer work its magic!
 
 ## Future Plans
 
