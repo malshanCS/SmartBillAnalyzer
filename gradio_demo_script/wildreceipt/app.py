@@ -25,7 +25,7 @@ model = AutoModelForTokenClassification.from_pretrained("Theivaprakasham/layoutl
 
 # load image example
 dataset = load_dataset("Theivaprakasham/wildreceipt", split="test")
-Image.open(dataset[20]["image_path"]).convert("RGB").save("example1.png")
+Image.open(dataset[20]["image_path"]).convert("RGB").save("example4.jpeg")
 Image.open(dataset[13]["image_path"]).convert("RGB").save("example2.png")
 Image.open(dataset[15]["image_path"]).convert("RGB").save("example3.png")
 
