@@ -25,6 +25,10 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      "react-native-document-scanner-plugin",
+      "react-native-vision-camera"
+    ]
   }
 }
