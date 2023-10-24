@@ -1,77 +1,118 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Button, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, Text, View, SafeAreaView, Button, Image } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
 import { Camera } from 'expo-camera';
+import { shareAsync } from 'expo-sharing';
+import * as MediaLibrary from 'expo-media-library';
+
 
 const Scan = ({ navigation }) => {
-  const [hasPermission, setHasPermission] = useState(null);
-  const [cameraType, setCameraType] = useState(Camera.Constants.Type.back);
-  const cameraRef = useRef(null);
-  const [imageData, setImageData] = useState('');
+  let cameraRef = useRef();
+  const [hasCameraPermission, setHasCameraPermission] = useState();
+  const [hasMediaLibraryPermission, setHasMediaLibraryPermission] = useState();
+  const [photo, setPhoto] = useState();
 
   useEffect(() => {
     (async () => {
-      const { status } = await Camera.requestCameraPermissionsAsync();
-      setHasPermission(status === 'granted');
+      const cameraPermission = await Camera.requestCameraPermissionsAsync();
+      const mediaLibraryPermission = await MediaLibrary.requestPermissionsAsync();
+      setHasCameraPermission(cameraPermission.status === 'granted');
+      setHasMediaLibraryPermission(mediaLibraryPermission.status === 'granted');
     })();
   }, []);
 
-  const takePicture = async () => {
-    if (cameraRef.current) {
-      const { uri } = await cameraRef.current.takePictureAsync(); // Take a picture and get the URI
-      setImageData(uri);
-    }
+  if (hasCameraPermission === undefined) {
+    return <Text>Requesting permissions...</Text>;
+  } else if (!hasCameraPermission) {
+    return <Text>Permission for camera not granted. Please change this in settings.</Text>;
+  }
+
+  let takePic = async () => {
+    let options = {
+      quality: 1,
+      base64: true,
+      exif: false,
+    };
+
+    let newPhoto = await cameraRef.current.takePictureAsync(options);
+    setPhoto(newPhoto);
   };
 
-  if (hasPermission === null) {
-    return <View />;
-  }
-  if (hasPermission === false) {
-    return <Text>No access to camera</Text>;
+  if (photo) {
+    let sharePic = () => {
+      shareAsync(photo.uri).then(() => {
+        setPhoto(undefined);
+      });
+    };
+
+    let savePhoto = () => {
+      MediaLibrary.saveToLibraryAsync(photo.uri).then(() => {
+        setPhoto(undefined);
+      });
+    };
+
+    return (
+      <SafeAreaView style={styles.container}>
+        <Image
+          style={styles.preview}
+          source={{ uri: `data:image/jpg;base64,${photo.base64}` }}
+        />
+        <View style={styles.buttonContainer}>
+          <Button title="Share" onPress={sharePic} style={styles.shareButton} />
+          {hasMediaLibraryPermission && (
+            <Button title="Save" onPress={savePhoto} style={styles.saveButton} />
+          )}
+          <Button title="Discard" onPress={() => setPhoto(undefined)} style={styles.discardButton} />
+        </View>
+        <StatusBar style="auto" />
+      </SafeAreaView>
+    );
   }
 
   return (
-    <View style={{ flex: 1 }}>
-      {imageData === '' ? (
-        <View style={{ flex: 1 }}>
-          <Camera
-            ref={cameraRef}
-            style={StyleSheet.absoluteFill}
-            type={cameraType}
-          />
-          <TouchableOpacity
-            style={{
-              width: 60,
-              height: 60,
-              borderRadius: 30,
-              backgroundColor: '#FF0037',
-              position: 'absolute',
-              bottom: 50,
-              alignSelf: 'center',
-            }}
-            onPress={takePicture} // Call takePicture when you want to capture an image
-          ></TouchableOpacity>
-        </View>
-      ) : (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Image source={{ uri: imageData }} style={{ width: '90%', height: 200 }} />
-          <TouchableOpacity
-            style={{
-              width: '90%',
-              height: 50,
-              borderWidth: 1,
-              alignSelf: 'center',
-              borderRadius: 10,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-            onPress={() => setImageData('')}
-          >
-            <Text>Take Another Photo</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-    </View>
+    <Camera style={styles.container} ref={cameraRef}>
+      <View style={styles.buttonContainer}>
+        <Button title="Take a clear picture of your Bill/Invoice" onPress={takePic} style={styles.takePicButton} />
+      </View>
+      <StatusBar style="auto" />
+    </Camera>
   );
 };
+
+const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      alignItems: 'flex-start', // Align items to the left
+      justifyContent: 'flex-start', // Align items to the top
+      paddingHorizontal: 20, // Add some padding to the container
+      paddingTop: 20, // Add some padding to the top
+    },
+    buttonContainer: {
+      backgroundColor: '#fff',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      padding: 10,
+      width: '100%',
+    },
+    button: {
+      borderRadius: 5, // Make the buttons smaller by reducing the border radius
+      padding: 8, // Reduce the padding to make buttons smaller
+      alignItems: 'center', // Center the content inside the button
+      justifyContent: 'center', // Center the content inside the button
+    },
+    takePicButton: {
+      backgroundColor: '#000',
+    },
+    shareButton: {
+      backgroundColor: '#00f',
+    },
+    saveButton: {
+      backgroundColor: '#0f0',
+    },
+    discardButton: {
+      backgroundColor: '#f00',
+    },
+  });
+  
 
 export default Scan;
