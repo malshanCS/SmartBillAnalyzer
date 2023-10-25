@@ -11,6 +11,7 @@ const Scan = ({ navigation }) => {
   const [hasCameraPermission, setHasCameraPermission] = useState();
   const [hasMediaLibraryPermission, setHasMediaLibraryPermission] = useState();
   const [photo, setPhoto] = useState();
+  const [showPreview, setShowPreview] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -36,23 +37,39 @@ const Scan = ({ navigation }) => {
 
     let newPhoto = await cameraRef.current.takePictureAsync(options);
     setPhoto(newPhoto);
+    setShowPreview(true); // Show the preview
   };
 
   if (photo) {
     let sharePic = () => {
       shareAsync(photo.uri).then(() => {
         setPhoto(undefined);
+        setShowPreview(false);
       });
     };
 
     let savePhoto = () => {
       MediaLibrary.saveToLibraryAsync(photo.uri).then(() => {
         setPhoto(undefined);
+        setShowPreview(false);
       });
     };
 
     return (
       <SafeAreaView style={styles.container}>
+            {showPreview ? ( // Show the preview if showPreview is true
+        <Image
+            style={styles.preview}
+            source={{ uri: `data:image/jpg;base64,${photo.base64}` }}
+        />
+        ) : ( // Show the camera view if showPreview is false
+        <Camera style={styles.container} ref={cameraRef}>
+            <View style={styles.buttonContainer}>
+            <Button title="Take Pic" onPress={takePic} style={styles.takePicButton} />
+            </View>
+        </Camera>
+        )}
+        
         <Image
           style={styles.preview}
           source={{ uri: `data:image/jpg;base64,${photo.base64}` }}
