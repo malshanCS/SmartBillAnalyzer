@@ -41,7 +41,7 @@ st.markdown("""<style>
 st.markdown("<h1 style='font-size: 60px; text-align: center;'> Smart Bill Analyzer</h1>", unsafe_allow_html=True)
 
 # Tabs 
-selected2 = option_menu(None, ["Home", "Upload", "Insights",], 
+selected2 = option_menu(None, ["Login", "Upload", "Insights",], 
     icons=['house', 'cloud-upload', "list-task"],
     menu_icon="cast", default_index=0, orientation="horizontal")
 
@@ -90,27 +90,57 @@ elif selected2 == "Insights":
 
     button_style = """
     <style>
-        .centered {
-            display: flex;
-            justify-content: center;
-        }
-        .stButton>button {
-            background-color: #0c7d21;  /* Green */
-            color: white;
-            width: 100%;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .stButton>button:hover {
-            background-color: #0f5c01;  /* Darker green on hover */
-            color: black;
-        }
+    .centered {
+        display: flex;
+        justify-content: center;
+    }
+
+    .stButton>button {
+        background-color: white;
+        color: #2f28bd;
+        width: 100%;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        transition: color 0.5s, transform 0.2s, background-color 0.2s;
+    }
+
+    .stButton>button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        transform: translateX(-100%);
+        transition: transform 0.2s linear; /* Change to your desired timing function */
+    }
+
+    .stButton>button::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.2s linear; /* Change to your desired timing function */
+    }
+
+    .stButton>button:hover::before {
+        transform: translateX(0);
+    }
+
+    .stButton>button:hover::after {
+        transform: translateX(100%);
+    }
     </style>
     """
+
 
     st.markdown(button_style, unsafe_allow_html=True)
     ###
@@ -242,7 +272,7 @@ elif selected2 == "Insights":
             'xanchor': 'center',  # Title anchor point
             'y': 0.95,  # Title Y position
             'yanchor': 'top',  # Title Y anchor point
-            'font': {'size': 24}  # Adjust the font size as needed
+            'font': {'size': 24, 'color': 'white'}  # Adjust the font size as needed
         }
 )
 
@@ -276,11 +306,21 @@ elif selected2 == "Insights":
             'xanchor': 'center',  # Title anchor point
             'y': 0.95,  # Title Y position
             'yanchor': 'top',  # Title Y anchor point
-            'font': {'size': 24}  # Adjust the font size as needed
+            'font': {'size': 24, 'color': 'white'}  # Adjust the font size as needed
         }
         )
 
+        # Set custom background colors for trace1 and trace2
+        trace1.update_layout(
+            plot_bgcolor='#060321',  # Set the background color
+            paper_bgcolor='#060321',  # Set the paper (plot area) background color
+            font=dict(color='white')
+        )
 
+        trace2.update_layout(
+            plot_bgcolor='#060321',  # Set the background color
+            paper_bgcolor='#060321', # Set the paper (plot area) background color
+        )
 
     
         # Plot!
