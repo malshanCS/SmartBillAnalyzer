@@ -73,8 +73,6 @@ def unnormalize_box(bbox, width, height):
 def iob_to_label(label):
     return label
 
-
-
 def process_image(image):
 
     print(type(image))
