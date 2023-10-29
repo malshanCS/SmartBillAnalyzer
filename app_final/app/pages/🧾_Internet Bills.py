@@ -11,8 +11,8 @@ from azure.core.exceptions import ResourceNotFoundError
 from azure.core.credentials import AzureKeyCredential
 from azure.ai.formrecognizer import DocumentAnalysisClient
 import mimetypes 
-from streamlit_lottie import st_lottie
-from streamlit_lottie import st_lottie_spinner
+# from streamlit_lottie import st_lottie
+# from streamlit_lottie import st_lottie_spinner
 import requests
 import time 
 import streamlit.components.v1 as components
@@ -25,15 +25,15 @@ st.set_page_config(page_title="Internet Bills", page_icon=":earth_americas:")
 
 st.markdown("<h2 style='font-size: 40px; text-align: center;'> Analyze your Internet bills!! </h2>", unsafe_allow_html=True)
 
-def load_lottieurl(url: str):
-    r = requests.get(url)
-    if r.status_code != 200:
-        return None
-    return r.json()
+# def load_lottieurl(url: str):
+#     r = requests.get(url)
+#     if r.status_code != 200:
+#         return None
+#     return r.json()
 
-lotti_internet = "https://lottie.host/0801a3ca-b86e-451c-97a1-bbbabb3c120a/bO3TrZnQlz.json"
+# lotti_internet = "https://lottie.host/0801a3ca-b86e-451c-97a1-bbbabb3c120a/bO3TrZnQlz.json"
 
-lottie_json = load_lottieurl(lotti_internet)
+# lottie_json = load_lottieurl(lotti_internet)
 
 st.write(
     """<style>
@@ -96,7 +96,7 @@ def run_receipt_script():
             img_path = os.path.join(folder_path, filename)
             
             if img_path not in processed_images:
-                st_lottie(lottie_json, speed=1, height=200, width=200 , key="initi")
+                # st_lottie(lottie_json, speed=1, height=200, width=200 , key="initi")
                 try:
                     # Analyze the document using the custom model
                     with open(img_path, "rb") as document:
