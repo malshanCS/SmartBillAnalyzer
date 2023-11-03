@@ -12,6 +12,8 @@ from azure.core.credentials import AzureKeyCredential
 from azure.ai.formrecognizer import DocumentAnalysisClient
 import mimetypes 
 import pandas_bokeh
+from Homepage import session_state
+
 
 st.set_page_config(page_title="Utility Bills", page_icon="⚡")
 
@@ -37,6 +39,8 @@ st.write(
     </style>""",
     unsafe_allow_html=True,
 )
+
+
 
 
 endpoint = "https://thilakna-doc-intelligence-instance.cognitiveservices.azure.com/"
@@ -117,3 +121,70 @@ if st.button("Process"):
     progress_bar.progress(100)
     # Replace the message in the placeholder
     info_placeholder.success("Receipts processed and saved!")
+
+
+
+if st.button('Generate Insights'):
+    from Homepage import session_state
+    import re
+    df = pd.read_csv('../files/output_utility.csv')
+
+
+
+    # Function to clean and convert the date values
+    def clean_and_convert_date(date_str):
+        # date_str = re.sub(r'[^0-9/]', '', date_str)  # Remove non-numeric characters
+        date_formats = ['%Y/%m/%d', '%d/%m/%Y', '%d/%m', '%d-%m-%Y']
+        for format in date_formats:
+            try:
+                return pd.to_datetime(date_str, format=format).strftime('%Y-%m')
+            except ValueError:
+                pass
+        return "unknown"
+        
+    
+    df['year-month'] = df['date'].apply(clean_and_convert_date)
+
+    # fill unknown values with 2023-row number
+    # df['year-month'] = df['year-month'].replace('unknown', '2023-'+f"{df.index}")
+    
+
+    # replace all punctuations in amount column with .
+    df['amount'] = df['amount'].str.replace(',', '.')
+    df['amount'] = df['amount'].str.replace('-', '.')
+    df['amount'] = df['amount'].str.replace(' ', '')
+
+    def replace_second_dot(text):
+        return text.replace('..', '.')
+
+    # if there are two . replace the second one with empty
+    df['amount'] = df['amount'].apply(replace_second_dot)
+
+    # convert amount column to float
+    df['amount'] = df['amount'].astype(float)
+
+    # get type wise sum of amount
+    df = df.groupby(['type', 'year-month']).sum().reset_index()
+
+    # replace electricity with Electricity
+    df['type'] = df['type'].replace('electricity', 'Electricity')
+
+    df['type'] = df['type'].replace('water', 'Water')
+
+    st.dataframe(df, use_container_width=True)
+
+    # draw a pie chart
+    fig = px.pie(df, values='amount', names='type', title='Utility Bills')
+    st.plotly_chart(fig, use_container_width=True)
+
+    # draw a bar chart
+    fig = px.bar(df, x='year-month', y='amount', color='type', title='Utility Bills')
+    st.plotly_chart(fig, use_container_width=True)
+
+
+
+
+
+
+
+

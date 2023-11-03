@@ -16,6 +16,8 @@ import mimetypes
 import requests
 import time 
 import streamlit.components.v1 as components
+from ipyvizzu import Chart, Data, Config, Style
+from ipywidgets import HTML
 
 
 
@@ -236,11 +238,88 @@ if st.button('Generate Insight'):
 
 
 
-    col1, col2 = st.columns(2)
+    # Create two tabs
+    tabs = st.tabs(["Time Series", "ISP Wise Analysis",'Insights'])
 
-
-    with col1:
+    # Define the content for the "Time Series" tab
+    with tabs[0]:
         st.plotly_chart(fig)
-    with col2:
+
+    # Define the content for the "ISP Wise Analysis" tab
+    with tabs[1]:
         st.plotly_chart(fig2)
+
+
+
+    # Define the content for the "Recommendations" tab
+    with tabs[2]:
+        st.markdown("<h2 style='font-size: 30px; text-align: center;'> Additional Insights! </h2>", unsafe_allow_html=True)
+
+        last_month = pd.to_datetime('now').strftime('%Y-%m')
+        # get month name 
+        month_name = pd.to_datetime(last_month).strftime('%B')
+        # get year
+        year = pd.to_datetime(last_month).strftime('%Y')
+
+        last_month_data = df3[df3['year-month'] == last_month]
+        st.dataframe(last_month_data, use_container_width=True)
+
+        previous_month = (pd.to_datetime(last_month) - pd.DateOffset(months=1)).strftime('%Y-%m')
+        previous_month_data = df[df['year-month'] == previous_month]
+
+        st.markdown(f"<h1 style='font-size: 25px;'>{year} {month_name} Month Expenses per ISP</h1>", unsafe_allow_html=True)
+        st.dataframe(last_month_data, use_container_width=True)
+
+
+
+        # Create a Streamlit metric to display the comparison
+        st.markdown("<h1 style='font-size: 25px;'>Money Spent this month!</h1>", unsafe_allow_html=True)
+        col1, col2 = st.columns(2)
+
+        for isp in last_month_data['ISP'].unique():
+            current_amount = last_month_data[last_month_data['ISP'] == isp]['amount'].values[0]
+            previous_amount = previous_month_data[previous_month_data['ISP'] == isp]['amount'].values[0]
+            amount_difference = current_amount - previous_amount
+            label_font_size = '20px'
+            to_label = f"**{isp}**: this month's bill amount"
+            if isp == 'Dialog':
+                with col1:
+                    st.metric(label=to_label, value=current_amount, delta=amount_difference)
+
+            elif isp == 'MOBITEL':
+                with col2:
+                    st.metric(label=to_label, value=current_amount, delta=amount_difference)
+
+
+        
+        average_expenditure = df3.groupby('ISP')['amount'].mean()
+
+        st.markdown("<h1 style='font-size: 25px;'>Average Expenditure Per ISP</h1>", unsafe_allow_html=True)
+
+        # # markdown the values
+        # for isp in average_expenditure.index:
+        #     st.markdown(f"**{isp}**: {average_expenditure[isp]}")
+
+
+        color_scale = {'Dialog': '#ff0000', 'MOBITEL': '#00ad2e'}
+        # Create a Plotly pie graph
+        fig4 = px.pie(
+            values=average_expenditure,
+            names=average_expenditure.index,
+            color=average_expenditure.index,
+            color_discrete_map=color_scale,
+        
+        )
+
+        # Display the pie graph in the Streamlit app
+        st.plotly_chart(fig4)        
+
+
+
+
+
+
+
+
+
 

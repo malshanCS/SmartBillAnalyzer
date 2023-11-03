@@ -72,6 +72,15 @@ water_path = "../utility_images"
 single_process_image = ""
 up_image = None
 
+class SessionState:
+    def __init__(self):
+        self.slider_value = 0
+
+# Initialize the SessionState instance
+session_state = SessionState()
+
+
+
 for i, uploaded_image in enumerate(uploaded_images):
     original_filename = uploaded_image.name
     up_image = uploaded_image
@@ -163,10 +172,14 @@ with coll1:
                     # Save the ISP image into the "isp_images" folder
                     isp_image_path = os.path.join(isp_path, single_process_image)
                     # Open the image using Pillow
-                    # img = Image.open(document_path)
+                    img = Image.open(document_path)
 
-                    # Save the image using resize_image function
-                    resize_image(document_path, isp_image_path,max_size)
+                    # Save the image using Pillow
+                    img.save(isp_image_path)
+
+                    # # Save the image using resize_image function
+                    # resize_image(document_path, isp_image_path,max_size)
+
                     
                     progress_bar1.progress(75)
 
@@ -204,6 +217,7 @@ with coll1:
 
         # fill progress bar for 100%
         progress_bar1.progress(100)
+        st.markdown(f"Image '{single_process_image}' processed successfully.")
 
 
 with coll2:
@@ -269,32 +283,31 @@ with coll2:
                     # Save the ISP image into the "isp_images" folder
                     isp_image_path = os.path.join(isp_path, single_process_image)
                     # Open the image using Pillow
-                    # img = Image.open(document_path)
+                    img = Image.open(document_path)
 
                     # Save the image using Pillow
-                    # img.save(isp_image_path)
-                    resize_image(document_path, isp_image_path,max_size)
+                    img.save(isp_image_path)
                     progress_bar2.progress(75)
                 
                 elif doc_type == "electricity_bill":
                     # Save the ISP image into the "isp_images" folder
                     elec_image_path = os.path.join(elec_path, single_process_image)
                     # Open the image using Pillow
-                    # img = Image.open(document_path)
+                    img = Image.open(document_path)
 
                     # Save the image using Pillow
-                    # img.save(elec_image_path)
-                    resize_image(document_path, elec_image_path,max_size)
+                    img.save(elec_image_path)
+                    # resize_image(document_path, elec_image_path,max_size)
 
                 elif doc_type == 'water_bill':
                     # Save the ISP image into the "isp_images" folder
                     water_image_path = os.path.join(water_path, single_process_image)
                     # Open the image using Pillow
-                    # img = Image.open(document_path)
+                    img = Image.open(document_path)
 
                     # Save the image using Pillow
-                    # img.save(water_image_path)
-                    resize_image(document_path, water_image_path,max_size)
+                    img.save(water_image_path)
+                    # resize_image(document_path, water_image_path,max_size)
                     progress_bar2.progress(75)
             else:
                 st.markdown(f"No document type found for {single_process_image}")

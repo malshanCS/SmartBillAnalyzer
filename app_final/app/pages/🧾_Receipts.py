@@ -122,6 +122,7 @@ if st.button('Generate Insight'):
     # Create a new column 'year-month'
     
     df['year-month'] = df['bill_date'].dt.strftime('%Y-%m')
+    # st.dataframe(df, use_container_width=True)
     
 
     # Group by 'year-month' and calculate the sum of 'bill_amount'
@@ -129,7 +130,22 @@ if st.button('Generate Insight'):
     
     df1 = pd.DataFrame(bill_totals_per_year_month, columns=['year-month', 'bill_amount'])
 
-    st.dataframe(df1, use_container_width=True)
+    # st.dataframe(df1, use_container_width=True)
+    # Create a Plotly Table
+    import plotly.graph_objects as go
+    fig = go.Figure(data=[go.Table(
+        header=dict(values=list(df1.columns),
+                    fill_color='paleturquoise',
+                    align='left'),
+        cells=dict(values=[df1['year-month'], df1['bill_amount']],
+                fill_color='lavender',
+                align='left'))
+    ])
+
+
+
+    # Display the Plotly Table in the Streamlit app
+    st.plotly_chart(fig)
 
     # Create the year-month line graph using Plotly Express
     fig = px.line(df1, x='year-month', y='bill_amount', markers=True)
@@ -164,36 +180,26 @@ if st.button('Generate Insight'):
 
     most_recent_years = df2['Year'].unique()[-4:]
     df_most_recent = df2[df2['Year'].isin(most_recent_years)]
+
+    # st.dataframe(df_most_recent)
     
 
     # Create the area plots
-    fig2 = px.area(df_most_recent, x='Month', y='Bill Total', facet_col='Year', facet_col_wrap=2,
+    fig2 = px.area(df_most_recent, x='Month', y='Bill Total', facet_col='Year', facet_col_wrap=1,
                 color='Year',  # Use different colors for each year
                 labels={'Bill Total': 'Bill Total'},  # Customize the label
+                facet_col_spacing=1,  # Adjust the spacing between columns
+                facet_row_spacing=0.1
                 )  # Set a common title
 
     # Customize the Y-axis range for each graph
     for year in df_most_recent['Year'].unique():
         fig2.update_yaxes(range=[0, df_most_recent['Bill Total'].max()], row=df_most_recent['Year'].unique().tolist().index(year) + 1)
 
-    # # Create the area plots for all years
-    # fig2 = px.area(df2, x='Month', y='Bill Total', facet_col='Year', facet_col_wrap=2,
-    #             color='Year',  # Use different colors for each year
-    #             labels={'Bill Total': 'Bill Total'},  # Customize the label
-    #             title='Yearly Area Plots')  # Set a common title
-
-    # # Create a list of the most recent years (e.g., the last 3 years)
-    # most_recent_years = df2['Year'].unique()[-3:]
-
-    # # Define the facet sizes (large and small)
-    # facet_sizes = [1.2 if year in most_recent_years else 0.8 for year in df2['Year'].unique()]
-
-    # # Update the facet_col parameters to use the facet sizes
-    # fig2.update_traces(facet_col=facet_sizes)
     fig2.update_layout(
-    width=400,  # Set the width of the plot
-    height=300,  # Set the height of the plot
-    margin=dict(l=10, r=10, t=30, b=30)
+    width=1000,  # Set the width of the plot
+    height=800,  # Set the height of the plot
+    margin=dict(l=100, r=100, t=30, b=30)
     )
 
 
@@ -206,6 +212,11 @@ if st.button('Generate Insight'):
 
     # Render the Markdown content
     st.markdown(markdown_text, unsafe_allow_html=True)
+    fig.update_layout(
+    width=1000,  # Set the width of the plot
+    height=300,  # Set the height of the plot
+    margin=dict(l=100, r=100, t=30, b=30)
+    )
     st.plotly_chart(fig)
     # Add custom CSS styles
     st.markdown(
